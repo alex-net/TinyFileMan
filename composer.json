@@ -1,0 +1,30 @@
+{
+    "name": "alex-net/tiny-file-man",
+    "description": "adsd",
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "keywords": ["yii2", "yii 2", "authmanager","tinyMCE","Responsive file namager","widgets"],
+    "authors": [
+        {
+            "name": "Alex Net",
+            "email": "alexnet2004@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2":"~2.0",
+        "npm-asset/tinymce":"~5.2.0",
+        "npm-asset/tinymce-i18n":"~19.9.0"
+    },
+    "autoload":{
+        "psr-4":{
+            "AlexNet\\TinyFileMan\\":"src/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
+}
