@@ -1,6 +1,6 @@
 {
     "name": "alex-net/tiny-file-man",
-    "description": "adsd",
+    "description": "Компонент реализующий подключение к полю textarea визуального редактора TinyMCE5 и файлового менеджера Responsive FileManager",
     "type": "yii2-extension",
     "license": "BSD-3-Clause",
     "keywords": ["yii2", "yii 2", "authmanager","tinyMCE","Responsive file namager","widgets"],
