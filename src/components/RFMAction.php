@@ -6,7 +6,7 @@ class RFMAction extends \yii\base\Action
 {
 	public function run()
 	{
-		$file=Yii::getAlias($this->controller->module->RFMlink.'/filemanager/'.$this->id.'.php');
+		$file=Yii::getAlias($this->controller->module->RFMlink.'/'.$this->id.'.php');
 		// если файла нет - пишем ошибку .. 
 		if (!file_exists($file))
 			return 'Ошибка';

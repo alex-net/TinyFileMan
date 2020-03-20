@@ -17,7 +17,7 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 	 */
 	public $perms=[];
 	/**
-	 * Ссылка на распакованный архив . Responsive File Manager 
+	 * Ссылка на каталог filenamager в распакованном архиве . Responsive File Manager 
 	 */
 	public $RFMlink='';
 

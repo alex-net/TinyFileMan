@@ -13,7 +13,7 @@ class TinyMCEWhithRfmAsset extends \yii\web\AssetBundle
 		parent::init();
 		$inst=\AlexNet\TinyFileMan\FileManMod::getInstance();
 		if(!empty($inst->RFMlink) && file_exists(Yii::getAlias($inst->RFMlink))){
-			$this->sourcePath=$inst->RFMlink.'/tinymce';
+			$this->sourcePath=$inst->RFMlink;//.'/filemanager';
 			$this->js[]='plugin.min.js';
 		}
 

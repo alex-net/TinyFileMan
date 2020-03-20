@@ -25,7 +25,7 @@ class FileManController extends \yii\web\Controller
 
 	public function actions()
 	{
-		$path=Yii::getAlias($this->module->RFMlink.'/filemanager/');
+		$path=Yii::getAlias($this->module->RFMlink.'/');
 		$list=\yii\helpers\FileHelper::findFiles($path,[
 			'recursive'=>false,
 			'only'=>['*.php'],
@@ -46,7 +46,7 @@ class FileManController extends \yii\web\Controller
 	 */
 	public function actionCssScripts($cssscripts)
 	{
-		$path=Yii::getAlias($this->module->RFMlink.'/filemanager/'.$cssscripts);
+		$path=Yii::getAlias($this->module->RFMlink.'/'.$cssscripts);
 		if (file_exists($path)){
 			$hand=fopen($path, 'rb');
 
