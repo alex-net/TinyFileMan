@@ -6,8 +6,6 @@ use Yii;
 
 class TinyMCEWidget extends \yii\base\Widget
 {
-	// уникальный id для обозначения  текстового редактора ..
-	public $elid;
 	/**
 	 * насьройки редактора .. 
 	 * @var array
@@ -28,15 +26,13 @@ class TinyMCEWidget extends \yii\base\Widget
 
 
 
-
 	public function run()
 	{
 		// экземпляр модуля ... 
 		$inst=\AlexNet\TinyFileMan\FileManMod::getInstance();
 
 		// назначение уникального идентификатора . для поля 
-		if (!$this->elid)
-			$this->elid='text-area-witch-tiny-'.$this->id;
+		$elid=md5('text-area-witch-tiny-'.$this->id);
 
 		// объединение настроек редактора .... 
 		//if (!empty($this->editorConfig))
@@ -54,12 +50,11 @@ class TinyMCEWidget extends \yii\base\Widget
 
 		// настройки храним в сессии ..
 		$confArr=Yii::$app->session->get('file-man-rfm',[]);
-		$confArr[$this->elid]=$this->editorConfig;
+		$confArr[$elid]=$this->editorConfig;
 		Yii::$app->session->set('file-man-rfm',$confArr);
 
 		return \yii\helpers\Html::tag('textarea','',[
-			'id'=>$this->elid,
-			'data-confurl'=>\yii\helpers\Url::to([$inst->id.'/file-man/config','elid'=>$this->elid]),
+			'data-confurl'=>\yii\helpers\Url::to([$inst->id.'/file-man/config','elid'=>$elid]),
 			'class'=>'textarea-with-tiny',
 			'rows'=>$this->textareaHeigt,
 		]);

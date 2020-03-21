@@ -49,9 +49,10 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 	public function bootstrap($app)
 	{
 		$app->urlManager->addRules([
-			$this->baseRFMUrl.'/el-config/<elid>'=>$this->id.'/file-man/config',
-			$this->baseRFMUrl.'/<action>.php'=>$this->id.'/file-man/<action>',
-			$this->baseRFMUrl.'/<cssscripts:.*>'=>$this->id.'/file-man/css-scripts',
+			$this->baseRFMUrl.'/el-config/<elid>'=>'/'.$this->id.'/file-man/config',
+			['pattern'=>$this->baseRFMUrl.'/<action>','route'=>'/'.$this->id.'/file-man/<action>','suffix'=>'.php'],
+			//$this->baseRFMUrl.'/<action>.php'=>'/'.$this->id.'/file-man/<action>',
+			$this->baseRFMUrl.'/<cssscripts:.*>'=>'/'.$this->id.'/file-man/css-scripts',
 
 			//'file-man/get-editor-config'=>$this->id.'/file-man/config'
 		]);
