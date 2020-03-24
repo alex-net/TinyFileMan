@@ -3,44 +3,41 @@
 namespace AlexNet\TinyFileMan;
 
 use Yii;
+use AlexNet\TinyFileMan\components\FileManUrlRule;
 
 class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterface
 {
 	/**
-	 * настройки редактора .. 
+	 * настройки редактора TinyMCE5 .. 
 	 * @var array
 	 */
 	public $editorConfig=[];
-	/**
-	 * право доступа .. 
-	 * @var string
-	 */
-	public $perms=[];
+
 	/**
 	 * Ссылка на каталог filenamager в распакованном архиве . Responsive File Manager 
+	 * @example '@app/rfm2/filemanager'  ( каталог распаковки Responsive File Manager = @app/rfm2 )
 	 */
 	public $RFMlink='';
 
 	/**
-	 * базовый url для манагера ..
+	 * базовый пути для манагера .. ассоциированный массив, ключами которого являются пути по которым будет открываться файловый менеджер .. формат путей аналогичен  свойству pattern из класса \yii\web\UrlRule .. 
+	 * значением каждого элемента является массив содержащий права жоступа (ключ perms)  каталог загрузки картинок (ключ uploadPath) и  каталог генерации миниатюр .. thumbs (ключ thumbsPath)
 	 */
-	public $baseRFMUrl='rfm';
+	public $baseRFMUrls=[
+		/*'test-1/<editor:.*>/aa'=>[
+			'perms'=>['@'],
+			'uploadPath'=>'@webroot/imgs/',
+			'thumbsPath'=>'@webroot/thumbs/',
+		],
+		'test-2/<rrr:.*>/aa'=>[
+			'perms'=>['dadas'],
+			'uploadPath'=>'@webroot/imgs/test/',
+			'thumbsPath'=>'@webroot/thumbs/',
+		],*/
+	];
 
 	/**
-	 * абсолютный путь к каталогк загрузок картинок на сервере ...  доступный из web
-	 * @var string
-	 */
-	public $uploadPath='@webroot/imgs/';
-
-	public $rfmTittle='Файловый манагер';
-	/**
-	 * абсолютный путь загрузки для  меньшенных изображений ( генерируются самостоятельно  .. каталог создаётся автоматичесик ..  )
-	 * @var string
-	 */
-	public $thumbsPath='@webroot/thumbs/';
-
-	/**
-	 * настройки файлового менеджер .. 
+	 * настройки файлового менеджера  .. (позволяют перебить данные из config файла файлового менеджера )
 	 * @var array
 	 */
 	public $fileManConfig=[];
@@ -48,14 +45,16 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 
 	public function bootstrap($app)
 	{
-		$app->urlManager->addRules([
-			$this->baseRFMUrl.'/el-config/<elid>'=>'/'.$this->id.'/file-man/config',
-			['pattern'=>$this->baseRFMUrl.'/<action>','route'=>'/'.$this->id.'/file-man/<action>','suffix'=>'.php'],
-			//$this->baseRFMUrl.'/<action>.php'=>'/'.$this->id.'/file-man/<action>',
-			$this->baseRFMUrl.'/<cssscripts:.*>'=>'/'.$this->id.'/file-man/css-scripts',
+		foreach(array_keys($this->baseRFMUrls) as $pattern)
+			$app->urlManager->addRules([
+				['class'=>FileManUrlRule::className(),'pattern'=>$pattern.'/el-config/<elid>','route'=>'/'.$this->id.'/file-man/config','patternKey'=>$pattern],
+				['class'=>FileManUrlRule::className(),'pattern'=>$pattern.'/<action>.php','route'=>'/'.$this->id.'/file-man/<action>','patternKey'=>$pattern],
+				['class'=>FileManUrlRule::className(),'pattern'=>$pattern.'/<cssscripts:.*>','route'=>'/'.$this->id.'/file-man/css-scripts','patternKey'=>$pattern],
+				//$this->baseRFMUrl.'/<action>.php'=>'/'.$this->id.'/file-man/<action>',
+				
 
-			//'file-man/get-editor-config'=>$this->id.'/file-man/config'
-		]);
+				//'file-man/get-editor-config'=>$this->id.'/file-man/config'
+			]);
 	}
 
 	public function init()

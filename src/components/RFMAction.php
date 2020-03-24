@@ -9,7 +9,8 @@ class RFMAction extends \yii\base\Action
 		$file=Yii::getAlias($this->controller->module->RFMlink.'/'.$this->id.'.php');
 		// если файла нет - пишем ошибку .. 
 		if (!file_exists($file))
-			return 'Ошибка';
+			throw new \yii\web\NotFoudHttpException();
+
 		// переходим в каталог  файлового менеджера .. 
 		chdir(dirname($file));
 		global $lang_vars, $config;
@@ -17,10 +18,10 @@ class RFMAction extends \yii\base\Action
 		// читаем настройки
 		$config=include dirname($file).'/config/config.php';
 		$config=array_merge($config,$this->controller->module->fileManConfig);
-		$config['upload_dir']=str_replace(Yii::getAlias('@webroot'), '', Yii::getAlias($this->controller->module->uploadPath));
+		$config['upload_dir']=str_replace(Yii::getAlias('@webroot'), '', Yii::getAlias($this->controller->conf['uploadPath']));
 		$config['default_language']=Yii::$app->language;
-		$config['current_path']=Yii::getAlias($this->controller->module->uploadPath);//'../../web/imgs/';//
-		$config['thumbs_base_path']= Yii::getAlias($this->controller->module->thumbsPath);//'../../web/thumbs/';
+		$config['current_path']=Yii::getAlias($this->controller->conf['uploadPath']);//'../../web/imgs/';//
+		$config['thumbs_base_path']= Yii::getAlias($this->controller->conf['thumbsPath']);//'../../web/thumbs/';
 		
 		return $this->controller->renderFile($file,[
 			'config'=>$config,

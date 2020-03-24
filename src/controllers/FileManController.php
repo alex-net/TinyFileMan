@@ -8,14 +8,26 @@ class FileManController extends \yii\web\Controller
 {
 	public $enableCsrfValidation=false;
 
+	public $conf=[];
+
+	public function init()
+	{
+		for($i=0;$i<count(Yii::$app->urlManager->rules);$i++)
+			if (Yii::$app->urlManager->rules[$i] instanceOf \AlexNet\TinyFileMan\components\FileManUrlRule){
+				$res2=Yii::$app->urlManager->rules[$i]->parseRequest(Yii::$app->urlManager,Yii::$app->request);
+				if ($res2 && !empty($this->module->baseRFMUrls[Yii::$app->urlManager->rules[$i]->patternKey]))
+					$this->conf=$this->module->baseRFMUrls[Yii::$app->urlManager->rules[$i]->patternKey];
+			}
+	}
+
 	public  function behaviors()
 	{
 		$bh=[];
-		if (!empty($this->module->perms))
+		if (!empty($this->conf['perms']))
 			$bh[]=[
 				'class'=>'\yii\filters\AccessControl',
 				'rules'=>[
-					['allow'=>true,'roles'=>$this->module->perms],
+					['allow'=>true,'roles'=>$this->conf['perms']],
 				],
 			];
 		return $bh;
