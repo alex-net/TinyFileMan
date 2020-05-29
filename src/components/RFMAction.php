@@ -32,14 +32,28 @@ class RFMAction extends \yii\base\Action
 	
 		// если файла нет - пишем ошибку .. 
 		// переходим в каталог  файлового менеджера .. 
-		chdir(dirname($file));
+		$mfrDir=dirname($file);
+		chdir($mfrDir);
 		global $lang_vars, $config;
 		$lang_vars=[];
 		// читаем настройки
-		$config=include dirname($file).'/config/config.php';
+		$config=include $mfrDir.'/config/config.php';
 		$config=array_merge($config,$this->controller->module->fileManConfig);
 		$config['upload_dir']=str_replace(Yii::getAlias('@webroot'), '', Yii::getAlias($conf['uploadPath']));
-		$config['default_language']=Yii::$app->language;
+		// разборки с ззыком
+		$lang=str_replace('-', '_', Yii::$app->language);
+		$langs=[$lang];
+		$lang=explode('_', $lang);
+		$lang=reset($lang);
+		$langs[]=strtolower($lang);
+
+		foreach($langs as $l)
+			if (file_exists($mfrDir.'/lang/'.$l.'.php')){
+				$config['default_language']=$l;
+				break;
+			}
+		
+		//$config['default_language']=reset($lang);
 		$config['current_path']=Yii::getAlias($conf['uploadPath']);//'../../web/imgs/';//
 		$config['thumbs_base_path']= Yii::getAlias($conf['thumbsPath']);//'../../web/thumbs/';
 		
