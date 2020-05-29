@@ -10,15 +10,7 @@ class FileManController extends \yii\web\Controller
 
 	public $conf=[];
 
-	public function init()
-	{
-		for($i=0;$i<count(Yii::$app->urlManager->rules);$i++)
-			if (Yii::$app->urlManager->rules[$i] instanceOf \AlexNet\TinyFileMan\components\FileManUrlRule){
-				$res2=Yii::$app->urlManager->rules[$i]->parseRequest(Yii::$app->urlManager,Yii::$app->request);
-				if ($res2 && !empty($this->module->baseRFMUrls[Yii::$app->urlManager->rules[$i]->patternKey]))
-					$this->conf=$this->module->baseRFMUrls[Yii::$app->urlManager->rules[$i]->patternKey];
-			}
-	}
+	
 
 	public  function behaviors()
 	{
@@ -78,11 +70,14 @@ class FileManController extends \yii\web\Controller
 	 */
 	public function actionConfig($elid)
 	{
-		Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+		
 		$arr=Yii::$app->session->get('file-man-rfm',[]);
 		$conf=$arr[$elid]??[];
-		if ($conf)
-			return ['conf'=>$conf];
-		return [];
+		if (!$conf)
+			throw new \yii\web\NotFoundHttpException("Error Processing Request");
+
+		Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+		return ['conf'=>$conf['editor']];
+		//return [];
 	}
 }

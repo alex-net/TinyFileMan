@@ -20,7 +20,7 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 	public $RFMlink='';
 
 	/**
-	 * базовый пути для манагера .. ассоциированный массив, ключами которого являются пути по которым будет открываться файловый менеджер .. формат путей аналогичен  свойству pattern из класса \yii\web\UrlRule .. 
+	 * базовые пути для манагера .. ассоциированный массив, ключами которого являются пути по которым будет открываться файловый менеджер .. формат путей аналогичен  свойству pattern из класса \yii\web\UrlRule .. 
 	 * значением каждого элемента является массив содержащий права жоступа (ключ perms)  каталог загрузки картинок (ключ uploadPath) и  каталог генерации миниатюр .. thumbs (ключ thumbsPath)
 	 */
 	public $baseRFMUrls=[
@@ -45,28 +45,30 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 
 	public function bootstrap($app)
 	{
+		$app->urlManager->addRules([
+			// настройки редактора .. грузим по get запросу ... 
+			'tiny-editor-conf/<elid>'=>$this->id.'/file-man/config',
+		]);
 		foreach(array_keys($this->baseRFMUrls) as $pattern)
 			$app->urlManager->addRules([
-				['class'=>FileManUrlRule::className(),'pattern'=>$pattern.'/el-config/<elid>','route'=>'/'.$this->id.'/file-man/config','patternKey'=>$pattern],
-				['class'=>FileManUrlRule::className(),'pattern'=>$pattern.'/<action>.php','route'=>'/'.$this->id.'/file-man/<action>','patternKey'=>$pattern],
-				['class'=>FileManUrlRule::className(),'pattern'=>$pattern.'/<cssscripts:.*>','route'=>'/'.$this->id.'/file-man/css-scripts','patternKey'=>$pattern],
-				//$this->baseRFMUrl.'/<action>.php'=>'/'.$this->id.'/file-man/<action>',
-				
-
-				//'file-man/get-editor-config'=>$this->id.'/file-man/config'
+				$pattern.'/<elid>/<action>.php'=>'/'.$this->id.'/file-man/<action>',
+				$pattern.'/<elid>/<cssscripts:.*>'=>'/'.$this->id.'/file-man/css-scripts',
 			]);
 	}
 
 	public function init()
 	{
 		parent::init();
-		if (empty($this->editorConfig))
+		if (empty($this->editorConfig)){
+			$lang=explode('-',Yii::$app->language);
+
 			$this->editorConfig=[
 				//'selector'=>'textarea',
-				'language'=>Yii::$app->language,
+				'language'=>reset($lang),
 				'plugins'=>'image imagetools media code',
 				'toolbar'=>'undo redo | styleselect | bold italic | link image | code',
 				'menubar'=>'file edit insert view format table tools help',
 			];
+		}
 	}
 }

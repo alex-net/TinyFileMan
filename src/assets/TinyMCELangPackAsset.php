@@ -10,6 +10,7 @@ class TinyMCELangPackAsset extends \yii\web\AssetBundle
 	public function init()
 	{
 		parent::init();
-		$this->js[]=Yii::$app->language.'.js';
+		$lang=explode('-',Yii::$app->language);
+		$this->js[]=reset($lang).'.js';
 	}
 }
