@@ -71,15 +71,18 @@ class TinyMCEWidget extends \yii\base\Widget
 			if (empty($inst->baseRFMUrls[$confKey]))
 				throw new \yii\base\InvalidConfigException("Нет подходящего пути");
 				
-			$access=true;
-			if (!empty($inst->baseRFMUrls[$confKey]['perms']))
+			// проверка прав доступа .. 
+			if (!empty($inst->baseRFMUrls[$confKey]['perms'])){
+				$access=true;
 				for($i=0;$i<count($inst->baseRFMUrls[$confKey]['perms']);$i++){
 					$p=$inst->baseRFMUrls[$confKey]['perms'][$i];
 					$access=$access && ($p=='@' && !Yii::$app->user->isGuest || Yii::$app->user->can($p));
 				}
+				if (!$access)
+					return '';
+			}
 
-			if (!$access)
-				return '';
+			
 		}
 
 		// объединение настроек редактора .... 
