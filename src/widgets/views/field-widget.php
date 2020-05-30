@@ -11,7 +11,7 @@ use \yii\bootstrap\Modal;
 	<?php endif;?>
 	<span class="input-group-btn" style="font-size: initial;">
 		<?php Modal::begin($modalOption);?>
-		<iframe src="<?=$iframeUrl;?>" width='100%' height='500' ></iframe>
+		<?=$this->render('iframe-widget',['src'=>$iframeUrl]);?>
 		<?php Modal::end();?>
 	</span>
 </div>
