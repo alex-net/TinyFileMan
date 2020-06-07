@@ -1,6 +1,6 @@
 <?php 
 
-namespace AlexNet\TinyFileMan\widgets;
+namespace AlexNet\TinyFileMan\Widgets;
 
 use Yii;
 
