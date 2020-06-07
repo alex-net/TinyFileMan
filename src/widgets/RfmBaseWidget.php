@@ -73,8 +73,8 @@ class RfmBaseWidget extends \yii\base\widget
 			return true;
 
 		$access=true;
-		for($i=0;$i<count($inst->baseRFMUrls[$this->confKey]['perms']);$i++){
-			$p=$this->inst->baseRFMUrls[$confKey]['perms'][$i];
+		for($i=0;$i<count($this->inst->baseRFMUrls[$this->confKey]['perms']);$i++){
+			$p=$this->inst->baseRFMUrls[$this->confKey]['perms'][$i];
 			$access=$access && ($p=='@' && !Yii::$app->user->isGuest || Yii::$app->user->can($p));
 		}
 		return $access;
