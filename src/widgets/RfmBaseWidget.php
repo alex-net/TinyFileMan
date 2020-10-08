@@ -4,7 +4,7 @@ namespace AlexNet\TinyFileMan\Widgets;
 
 use Yii;
 
-class RfmBaseWidget extends \yii\base\widget
+class RfmBaseWidget extends \yii\base\Widget
 {
 	/**
 	 * ссылка на модуль .. 
