@@ -14,7 +14,8 @@
     "require": {
         "yiisoft/yii2":"~2.0",
         "npm-asset/tinymce":"~5.2.0",
-        "npm-asset/tinymce-i18n":"~19.9.0"
+        "npm-asset/tinymce-i18n":"~19.9.0",
+        "nicolab/php-ftp-client":"~1.5.4"
     },
     "autoload":{
         "psr-4":{

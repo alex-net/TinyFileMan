@@ -66,7 +66,7 @@ class FileManController extends \yii\web\Controller
 	}
 
 	/**
-	 * получить настройки для жлемента ... 
+	 * получить настройки для элемента ... 
 	 */
 	public function actionConfig($elid)
 	{

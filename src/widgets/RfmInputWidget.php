@@ -80,10 +80,17 @@ class RfmInputWidget extends RfmBaseWidget
 		if ($this->relativeUrl)
 			$iframeurl['relative_url']=1;
 		$iframeurl['field_id']=$inputid;
+		if ($this->model && $this->attribute){
+			$fldr=dirname($this->model->{$this->attribute});
+			if (preg_match('#^'.$this->placeholderConfig['uploadPath'].'#i',$fldr)){
+				$fldr=preg_replace('#^'.$this->placeholderConfig['uploadPath'].'#i','',$fldr);
+				$iframeurl['fldr']=$fldr;
+			}
+		}
 		$iframeurl = \yii\helpers\Url::to($iframeurl);
 		//Yii::info($iframeurl,'$iframeurl');
 		
-		$this->saveConfogToSessi();
+		$this->saveConfigToSessi();
 		
 
 		return $this->render('field-widget',[

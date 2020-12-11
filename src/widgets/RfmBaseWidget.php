@@ -14,9 +14,15 @@ class RfmBaseWidget extends \yii\base\Widget
 
 	/**
 	 * ключик конфигурации 
+	 * string
 	 */
 	protected $confKey; 
 
+	/**
+	 * доп настройки для доступа по ftp ... 
+	 * массив с полями из config .. начинающиеся с ftp_ ... 
+	 */
+	public $confFtp=[];
 
 	/**
 	 * настройки зависящие от адреса расположения файлового манагера ... (один элемент (ключ) из baseRFMUrls  модуля.. с подстановкой параметров если надо .. Аналогично  \yii\helpers\Url::to()
@@ -64,6 +70,15 @@ class RfmBaseWidget extends \yii\base\Widget
 	}
 
 	/**
+	 * забрать настройки  для конкретного пути .. 
+	 * @return [type] [description]
+	 */
+	public function getPlaceholderConfig()
+	{
+		return $this->inst->baseRFMUrls[$this->confKey]??[];
+	}
+
+	/**
 	 * проверка доступа к виджету ... 
 	 * @return [type] [description]
 	 */
@@ -84,10 +99,14 @@ class RfmBaseWidget extends \yii\base\Widget
 	 * @param  array $data Масств настроек
 	 * @return [type]       [description]
 	 */
-	protected function saveConfogToSessi($data=[])
+	protected function saveConfigToSessi($data=[])
 	{
 		// добавляем ключик .. 
 		$data['filemanKey']=empty($this->confKey)?'':$this->confKey;
+		// сохраняем подстроечные данные для файлового менеджера..
+		foreach($this->confFtp as $x=>$y)
+			$data['fileManConf']['ftp_'.$x]=$y;
+
 		$confArr=Yii::$app->session->get('file-man-rfm',[]);
 		$confArr[md5($this->elid)]=$data;
 		Yii::$app->session->set('file-man-rfm',$confArr);

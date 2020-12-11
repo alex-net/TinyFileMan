@@ -96,7 +96,7 @@ class TinyMCEWidget extends RfmBaseWidget
 
 		// настройки храним в сессии ..
 		if ($this->inst){
-			$this->saveConfogToSessi([
+			$this->saveConfigToSessi([
 				'editor'=>$this->editorConfig,
 			]);
 			// урл получения настроек для редактора 

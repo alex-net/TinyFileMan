@@ -18,6 +18,7 @@ class RFMAction extends \yii\base\Action
 			throw new \yii\web\NotFoundHttpException("Нет такой страницы!");
 
 		$conf=$this->controller->module->baseRFMUrls[$sessi[$elid]['filemanKey']];
+		$fileManWidgetConfig=$sessi[$elid]['fileManConf']??[];
 		$params=Yii::$app->request->resolve();
 		$params=end($params);
 		// преобразование путей .. 
@@ -38,7 +39,7 @@ class RFMAction extends \yii\base\Action
 		$lang_vars=[];
 		// читаем настройки
 		$config=include $mfrDir.'/config/config.php';
-		$config=array_merge($config,$this->controller->module->fileManConfig);
+		$config=array_merge($config,$this->controller->module->fileManConfig,$fileManWidgetConfig);
 		$config['upload_dir']=str_replace(Yii::getAlias('@webroot'), '', Yii::getAlias($conf['uploadPath']));
 		// разборки с ззыком
 		$lang=str_replace('-', '_', Yii::$app->language);
@@ -56,7 +57,7 @@ class RFMAction extends \yii\base\Action
 		//$config['default_language']=reset($lang);
 		$config['current_path']=Yii::getAlias($conf['uploadPath']);//'../../web/imgs/';//
 		$config['thumbs_base_path']= Yii::getAlias($conf['thumbsPath']);//'../../web/thumbs/';
-		
+
 		return $this->controller->renderFile($file,[
 			'config'=>$config,
 			'version'=>$version,

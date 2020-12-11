@@ -12,7 +12,7 @@ class RfmIframeWidget extends RfmBaseWidget
 
 		$iframeurl=\yii\helpers\Url::to($this->createUrlToManager());
 
-		$this->saveConfogToSessi();
+		$this->saveConfigToSessi();
 
 		return $this->render('iframe-widget',['src'=>$iframeurl]);
 	}
