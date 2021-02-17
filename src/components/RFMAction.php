@@ -58,9 +58,21 @@ class RFMAction extends \yii\base\Action
 		$config['current_path']=Yii::getAlias($conf['uploadPath']);//'../../web/imgs/';//
 		$config['thumbs_base_path']= Yii::getAlias($conf['thumbsPath']);//'../../web/thumbs/';
 
-		return $this->controller->renderFile($file,[
-			'config'=>$config,
-			'version'=>$version,
-		]);	
+		try{
+			return $this->controller->renderFile($file,[
+				'config'=>$config,
+				'version'=>$version,
+			]);	
+		}
+		catch(\Exception $e){
+			return $this->controller->render('error',[
+				'errData'=>[
+					'mess'=>$e->getMessage(),
+					'code'=>$e->getCode(),
+					'file'=>$e->getFile().':'.$e->getLine(),
+					'trace'=>nl2br($e->getTraceAsString()),
+				],
+			]);
+		}
 	}
 }
