@@ -90,6 +90,10 @@ class TinyMCEWidget extends RfmBaseWidget
 			'class'=>'textarea-with-tiny '.$this->id,
 			'rows'=>$this->textareaHeigt,
 		];
+		// редактор сделали только для чтения ..надо забить textarea 
+		if (!empty($this->editorConfig['readonly']))
+			$tagConfig['disabled']='disabled';
+
 		
 		// назначение уникального идентификатора . для поля 
 		$elid=md5($this->elid);
