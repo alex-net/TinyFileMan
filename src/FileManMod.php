@@ -47,7 +47,7 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 	{
 		$app->urlManager->addRules([
 			// настройки редактора .. грузим по get запросу ... 
-			'tiny-editor-conf/<elid>'=>$this->id.'/file-man/config',
+			'tiny-editor-conf/<elid>'=>'/'.$this->id.'/file-man/config',
 		]);
 		foreach(array_keys($this->baseRFMUrls) as $pattern)
 			$app->urlManager->addRules([

@@ -104,7 +104,7 @@ class TinyMCEWidget extends RfmBaseWidget
 				'editor'=>$this->editorConfig,
 			]);
 			// урл получения настроек для редактора 
-			$tagConfig['data-confurl']=\yii\helpers\Url::to([$this->inst->id.'/file-man/config','elid'=>$elid]);
+			$tagConfig['data-confurl']=\yii\helpers\Url::to(['/'.$this->inst->id.'/file-man/config','elid'=>$elid]);
 		}
 		else{
 			$tagConfig['data-confkey']=$elid;
