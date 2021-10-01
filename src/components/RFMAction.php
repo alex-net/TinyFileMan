@@ -19,8 +19,7 @@ class RFMAction extends \yii\base\Action
 
 		$conf=$this->controller->module->baseRFMUrls[$sessi[$elid]['filemanKey']];
 		$fileManWidgetConfig=$sessi[$elid]['fileManConf']??[];
-		$params=Yii::$app->request->resolve();
-		$params=end($params);
+		$params=Yii::$app->request->queryParams;
 		// преобразование путей .. 
 		foreach(['uploadPath','thumbsPath'] as $key)
 			if (preg_match('#<([^>]+)(?:\:[^>]+)?>#',$conf[$key],$finds) && isset($params[$finds[1]])) {
@@ -29,6 +28,12 @@ class RFMAction extends \yii\base\Action
 				$path=Yii::getAlias($conf[$key]);
 				if (!file_exists($path))
 					\yii\helpers\FileHelper::createDirectory($path);
+				if ($key=='thumbsPath'){
+					$thumbsAsset=new \yii\web\AssetBundle([
+						'sourcePath'=>$path,
+					]);
+					$thumbsAsset->publish(Yii::$app->assetManager);
+				}
 			}
 	
 		// если файла нет - пишем ошибку .. 
@@ -62,6 +67,7 @@ class RFMAction extends \yii\base\Action
 			return $this->controller->renderFile($file,[
 				'config'=>$config,
 				'version'=>$version,
+				'thumbsAsset'=>$thumbsAsset??null,
 			]);	
 		}
 		catch(\Exception $e){
