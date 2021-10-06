@@ -1,25 +1,26 @@
 diff --git a/filemanager/UploadHandler.php b/filemanager/UploadHandler.php
-index a45ea14..4073081 100755
+index a45ea14..ff79f68 100755
 --- a/filemanager/UploadHandler.php
 +++ b/filemanager/UploadHandler.php
 @@ -1144,6 +1144,13 @@ class UploadHandler
                  } else {
                      move_uploaded_file($uploaded_file, $file_path);
                  }
-+            }elseif(file_exists($uploaded_file)){
-+                if (empty($this->options['ftp']))
-+                    rename($uploaded_file, $file_path);
-+                else{
++            }elseif(file_exists($uploaded_file)){ // Если загруженный файл есть
++                if (empty($this->options['ftp'])) // и мы не используем ftp
++                    rename($uploaded_file, $file_path); // переименовываем файл
++                else{// если используем ftp -  нужно забросиь файл на сервер
 +                    $fn=$this->options['storeFolder'].fix_filename(basename($file_path),$this->options['config']);
 +                    $this->options['ftp']->put($fn,$uploaded_file,FTP_BINARY);
-+                }   
++                }
              } else {
                  // Non-multipart uploads (PUT method support)
                  file_put_contents(
-@@ -1389,6 +1396,8 @@ class UploadHandler
+@@ -1389,6 +1396,9 @@ class UploadHandler
          $content_range = $content_range_header ?
              preg_split('/[^0-9]+/', $content_range_header) : null;
          $size =  $content_range ? $content_range[3] : null;
++        // Не грузились файлы мелкого размера
 +        if (!isset($content_range))
 +            $content_range=[0,$size,$size];
          $files = array();
@@ -38,7 +39,7 @@ index e514186..7a7efb9 100755
  
  if ($_SESSION['RF']["verify"] != "RESPONSIVEfilemanager") {
 diff --git a/filemanager/dialog.php b/filemanager/dialog.php
-index 3ebde34..b0ea325 100644
+index 3ebde34..7b0db0d 100644
 --- a/filemanager/dialog.php
 +++ b/filemanager/dialog.php
 @@ -1,8 +1,6 @@
@@ -55,10 +56,10 @@ index 3ebde34..b0ea325 100644
      try {
          $files = $ftp->scanDir($config['ftp_base_folder'] . $config['upload_dir'] . $rfm_subfolder . $subdir);
 -        if (!$ftp->isDir($config['ftp_base_folder'] . $config['ftp_thumbs_dir'] . $rfm_subfolder . $subdir)) {
-+        if (!$ftp->isDir($config['ftp_base_folder'] . $config['ftp_thumbs_dir'] . $rfm_subfolder . $subdir)) 
++        if (!$ftp->isDir($config['ftp_base_folder'] . $config['ftp_thumbs_dir'] . $rfm_subfolder . $subdir))
              create_folder(false, $config['ftp_base_folder'] . $config['ftp_thumbs_dir'] . $rfm_subfolder . $subdir, $ftp, $config);
 -        }
-+        
++
 +        // сканируем наличие тумбсов ...
 +        $filesThumbs=[];
 +        foreach($ftp->scanDir($config['ftp_base_folder'] . $config['ftp_thumbs_dir'] . $rfm_subfolder . $subdir) as $f)
@@ -68,22 +69,27 @@ index 3ebde34..b0ea325 100644
      } catch (FtpClient\FtpException $e) {
          echo "Error: ";
          echo $e->getMessage();
-@@ -1073,6 +1077,11 @@ $files = $sorted;
+@@ -1073,6 +1077,15 @@ $files = $sorted;
  
                      $img_width = $img_height = "";
                      if($ftp){
++                        // если под файл $file не нашелся тумбс пробуем создать  такой файл .. .
 +                        if (!in_array($file, $filesThumbs)){
 +                            $creation_thumb_path = '/'.$config['ftp_base_folder'].$config['ftp_thumbs_dir'].$subdir. $file;
-+                            if (!create_img($src, $creation_thumb_path, 122, 91, 'crop', $config,$ftp)) 
++                            // победили глюк с пробелами в назнвании файлов ..
++                            $bn=basename($src);
++                            $src=str_replace($bn, rawurlencode($bn), $src);
++                            if (!create_img($src, $creation_thumb_path, 122, 91, 'crop', $config,$ftp))
 +                                $src_thumb = $mini_src = "";
 +                        }
                          $mini_src = $src_thumb = $config['ftp_base_url'].$config['ftp_thumbs_dir'].$subdir. $file;
                          $creation_thumb_path = "/".$config['ftp_base_folder'].$config['ftp_thumbs_dir'].$subdir. $file;
                      }else{
-@@ -1097,6 +1106,11 @@ $files = $sorted;
+@@ -1097,6 +1110,12 @@ $files = $sorted;
                          }
                      }
                  }
++                // зачищаем пути от document root ... чтобы  все они были относительно корня ..
 +                foreach(['src_thumb','src','mini_src']as $var){
 +                    $$var=str_replace($_SERVER['DOCUMENT_ROOT'], '', $$var);
 +                    if ($thumbsAsset && strpos($$var, $thumbsAsset->sourcePath)===0)
@@ -93,7 +99,7 @@ index 3ebde34..b0ea325 100644
                  $is_icon_thumb_mini=false;
                  $no_thumb=false;
 diff --git a/filemanager/execute.php b/filemanager/execute.php
-index 0321bfa..f046cb1 100755
+index 0321bfa..7e7b878 100755
 --- a/filemanager/execute.php
 +++ b/filemanager/execute.php
 @@ -1,5 +1,4 @@
@@ -102,21 +108,23 @@ index 0321bfa..f046cb1 100755
  
  include 'include/utils.php';
  
-@@ -101,6 +100,9 @@ if (isset($info['extension']) && !(isset($_GET['action']) && $_GET['action'] ==
+@@ -101,6 +100,10 @@ if (isset($info['extension']) && !(isset($_GET['action']) && $_GET['action'] ==
      exit;
  }
  
++// при ипользовани ftp .. дорисовываем к пути базовый катаог ftp чтобы путь стал абсолютным ..
 +if ($ftp && !empty($config['ftp_base_folder']) && $path)
 +    $path=DIRECTORY_SEPARATOR.$config['ftp_base_folder'].$path;
 +
  if (isset($_GET['action'])) {
      switch ($_GET['action']) {
          case 'delete_file':
-@@ -151,14 +153,14 @@ if (isset($_GET['action'])) {
+@@ -151,14 +154,16 @@ if (isset($_GET['action'])) {
  				$path .= $name;
  				$path_thumb .= $name;
  				$res = create_folder(fix_path($path,$config),fix_path($path_thumb,$config),$ftp,$config);
 -				if(!$res){
++                // не буем матюкаться если  использовем ftp ..
 +				if(!$ftp && !$res){
  					response(trans('Rename_existing_folder').AddErrorLocation())->send();
  				}
@@ -125,6 +133,7 @@ index 0321bfa..f046cb1 100755
  		case 'rename_folder':
  			if ($config['rename_folders']){
 -                if(!is_dir($path)) {
++                // не буем матюкаться если  использовем ftp ..
 +                if(!$ftp && !is_dir($path)) {
                      response(trans('wrong path').AddErrorLocation())->send();
                      exit;
@@ -141,26 +150,26 @@ index 42f1666..f63512e 100755
  include 'include/utils.php';
  include 'include/mime_type_lib.php';
 diff --git a/filemanager/include/utils.php b/filemanager/include/utils.php
-index 8cda960..81b95b1 100755
+index 8cda960..4f1bebc 100755
 --- a/filemanager/include/utils.php
 +++ b/filemanager/include/utils.php
-@@ -1,5 +1,7 @@
+@@ -1,4 +1,6 @@
  <?php
- 
++// для поддержки языка ...
 +global $lang_vars;
-+
+ 
  if (!isset($_SESSION['RF']) || $_SESSION['RF']["verify"] != "RESPONSIVEfilemanager")
  {
- 	die('forbiden');
-@@ -318,6 +320,7 @@ function rename_file($old_path, $name, $ftp = null, $config = null)
+@@ -318,6 +320,8 @@ function rename_file($old_path, $name, $ftp = null, $config = null)
  
  function url_exists($url){
      if (!$fp = curl_init($url)) return false;
++    // закрываем лоткрытый curl чтобы не висел ...
 +    curl_close($fp);
      return true;
  }
  
-@@ -364,10 +367,6 @@ function rename_folder($old_path, $name, $ftp = null, $config = null)
+@@ -364,10 +368,6 @@ function rename_folder($old_path, $name, $ftp = null, $config = null)
  
  function ftp_con($config){
  	if(isset($config['ftp_host']) && $config['ftp_host']){
@@ -171,7 +180,7 @@ index 8cda960..81b95b1 100755
  
  		$ftp = new \FtpClient\FtpClient();
  		try{
-@@ -401,10 +400,10 @@ function ftp_con($config){
+@@ -401,10 +401,10 @@ function ftp_con($config){
  * @return bool
  * @throws \Exception
  */
@@ -184,19 +193,21 @@ index 8cda960..81b95b1 100755
  		if(url_exists($imgfile)){
  			$temp = tempnam('/tmp','RF');
  			unlink($temp);
-@@ -565,7 +564,7 @@ function checkresultingsize($sizeAdded)
+@@ -565,7 +565,8 @@ function checkresultingsize($sizeAdded)
  function create_folder($path = null, $path_thumbs = null,$ftp = null,$config = null)
  {
  	if($ftp){
 -		$ftp->mkdir($path);
++		// рекурсивно создаём каталоги ..
 +		$ftp->mkdir($path,true);
  		$ftp->mkdir($path_thumbs);
  	}else{
  		if(file_exists($path) || file_exists($path_thumbs)){
-@@ -877,20 +876,26 @@ function image_check_memory_usage($img, $max_breedte, $max_hoogte)
+@@ -877,20 +878,28 @@ function image_check_memory_usage($img, $max_breedte, $max_hoogte)
  			$memory_limit = 0;
  			if (strpos($mem, 'M') !== false) $memory_limit = abs(intval(str_replace(array('M'), '', $mem) * 1024 * 1024));
  			if (strpos($mem, 'G') !== false) $memory_limit = abs(intval(str_replace(array('G'), '', $mem) * 1024 * 1024 * 1024));
++			// для числового задания параметра memory_limit
 +			if (preg_match('#^\d+$#',$mem))$memory_limit=intval($mem);
  			
 -			$image_properties = getimagesize($img);
@@ -209,6 +220,7 @@ index 8cda960..81b95b1 100755
 -			$image_memory_usage = $K64 + ($image_width * $image_height * ($image_bits >> 3) * 2);
 -			$thumb_memory_usage = $K64 + ($max_breedte * $max_hoogte * ($image_bits >> 3) * 2);
 -			$memory_needed = abs(intval($memory_usage + $image_memory_usage + $thumb_memory_usage));
++			// на всякий пожарный обернули в try ...
 +			try{
 +				$image_properties = getimagesize($img);
 +				$image_width = $image_properties[0];
@@ -233,7 +245,7 @@ index 8cda960..81b95b1 100755
  			}
  		}
 diff --git a/filemanager/upload.php b/filemanager/upload.php
-index 639f51d..b994e3f 100755
+index 639f51d..7f4ceb1 100755
 --- a/filemanager/upload.php
 +++ b/filemanager/upload.php
 @@ -1,9 +1,5 @@
@@ -251,7 +263,7 @@ index 639f51d..b994e3f 100755
                  'tmp_name' => array($temp),
                  'size' => array(filesize($temp)),
 -                'type' => null
-+                'type' => mime_content_type($temp)
++                'type' => mime_content_type($temp),// определились с mime типом ..
              );
          } else {
              throw new Exception('Is not a valid URL.');
