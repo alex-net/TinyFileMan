@@ -1,6 +1,5 @@
 <?php 
 use \yii\helpers\Html;
-use \yii\bootstrap\Modal;
 ?>
 
 <div <?=Html::renderTagAttributes($wrapperOptions);?>>
@@ -9,9 +8,11 @@ use \yii\bootstrap\Modal;
 	<?php else:?>
 		<?=Html::Input($inputType,'text-field-'.$wid,'',$inputOptions);?>
 	<?php endif;?>
-	<span class="input-group-btn" style="font-size: initial;">
-		<?php Modal::begin($modalOption);?>
-		<?=$this->render('iframe-widget',['src'=>$iframeUrl]);?>
-		<?php Modal::end();?>
-	</span>
+	<span class="input-group-btn">
+		<?=\yii\helpers\Html::button($btnText,$btnOptions);?>
+	</span>	
+	<?php 
+		$BModalClass::begin($modalOption);
+		$BModalClass::end();
+	?>
 </div>

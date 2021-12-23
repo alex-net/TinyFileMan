@@ -21,20 +21,14 @@ class RFMAction extends \yii\base\Action
 		$fileManWidgetConfig=$sessi[$elid]['fileManConf']??[];
 		$params=Yii::$app->request->queryParams;
 		// преобразование путей .. 
-		foreach(['uploadPath','thumbsPath'] as $key)
-			if (preg_match('#<([^>]+)(?:\:[^>]+)?>#',$conf[$key],$finds) && isset($params[$finds[1]])) {
+		foreach(['uploadPath','thumbsPath'] as $key){
+			if (preg_match('#<([^>]+)(?:\:[^>]+)?>#',$conf[$key],$finds) && isset($params[$finds[1]])) 
 				$conf[$key]=str_replace($finds[0], $params[$finds[1]], $conf[$key]);
-				// проверка наличия путей .. 
-				$path=Yii::getAlias($conf[$key]);
-				if (!file_exists($path))
-					\yii\helpers\FileHelper::createDirectory($path);
-				if ($key=='thumbsPath'){
-					$thumbsAsset=new \yii\web\AssetBundle([
-						'sourcePath'=>$path,
-					]);
-					$thumbsAsset->publish(Yii::$app->assetManager);
-				}
-			}
+			// проверка наличия путей .. 
+			$path=Yii::getAlias($conf[$key]);
+			if (!file_exists($path))
+				\yii\helpers\FileHelper::createDirectory($path);
+		}
 	
 		// если файла нет - пишем ошибку .. 
 		// переходим в каталог  файлового менеджера .. 

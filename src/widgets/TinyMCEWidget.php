@@ -76,9 +76,7 @@ class TinyMCEWidget extends RfmBaseWidget
 			$ass=\AlexNet\TinyFileMan\assets\TinyMCEWhithRfmAsset::register($this->view);
 			// https://www.codeinhouse.com/install-tinymce-laravel-and-responsive-file-manager/
 			$this->editorConfig['plugins'].=' filemanager';
-			$filemanPath=\yii\helpers\Url::to(array_merge([$this->inst->id.'/file-man/css-scripts','cssscripts'=>'test.js'],$this->urlParams));
-			$filemanPath=dirname($filemanPath);
-			$this->editorConfig['external_filemanager_path']=$filemanPath.'/';
+			$this->editorConfig['external_filemanager_path']=\yii\helpers\Url::to($this->createUrlToManager());
 			$this->editorConfig['filemanager_title']=$this->fileManWindowTitle;
 		}
 		else
@@ -100,9 +98,10 @@ class TinyMCEWidget extends RfmBaseWidget
 
 		// настройки храним в сессии ..
 		if ($this->inst){
-			$this->saveConfigToSessi([
+
+			/*$this->saveConfigToSessi([
 				'editor'=>$this->editorConfig,
-			]);
+			]);*/
 			// урл получения настроек для редактора 
 			$tagConfig['data-confurl']=\yii\helpers\Url::to(['/'.$this->inst->id.'/file-man/config','elid'=>$elid]);
 		}

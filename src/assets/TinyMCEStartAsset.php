@@ -4,7 +4,7 @@ namespace AlexNet\TinyFileMan\assets;
 
 class TinyMCEStartAsset extends \yii\web\AssetBundle
 {
-	public $sourcePath='@app/vendor/alex-net/tiny-file-man/src/front';
+	public $sourcePath='@AlexNet/TinyFileMan/front';
 
 	public $js=['tiny-mce-init.js'];
 

@@ -31,6 +31,19 @@ class RfmBaseWidget extends \yii\base\Widget
 	public $for;
 
 	/**
+	 * использовать относительные ссылки 
+	 * @var bool
+	 */
+	public $relativeUrl=true;
+
+	/**
+	 * Класс модального окна . ... можно пользовать разный bootstrap  
+	 * @var string
+	 */
+	public $bootstrapModelClass;
+
+
+	/**
 	 * параметр определящий настройку диз urls модуля .. 
 	 * @var string
 	 */
@@ -48,8 +61,11 @@ class RfmBaseWidget extends \yii\base\Widget
 		// назначение уникального идентификатора . для поля 
 		//$this->elid=md5('text-area-witch-tiny-'.$this->id);
 		$elid=[];
-		if (!empty($this->inst))
+		if (!empty($this->inst)){
 			$elid[]=$this->inst->id;
+			if (!$this->bootstrapModelClass && $this->inst->bootstrapModelClass)
+				$this->bootstrapModelClass=$this->inst->bootstrapModelClass;
+		}
 		$elid[]=$this->id;
 
 		$this->elid='rfm--'.implode('--', $elid);
@@ -67,6 +83,12 @@ class RfmBaseWidget extends \yii\base\Widget
 			// проверка прав доступа .. 
 			
 		}
+	}
+
+	public function afterRun($rea)
+	{
+		$this->saveConfigToSessi();
+		return parent::afterRun($rea);
 	}
 
 	/**
@@ -106,6 +128,9 @@ class RfmBaseWidget extends \yii\base\Widget
 		// сохраняем подстроечные данные для файлового менеджера..
 		foreach($this->confFtp as $x=>$y)
 			$data['fileManConf']['ftp_'.$x]=$y;
+		// проброс настроеек редактора . если используем редактор ..
+		if ($this->hasProperty('editorConfig'))
+			$data['editor']=$this->editorConfig;
 
 		$confArr=Yii::$app->session->get('file-man-rfm',[]);
 		$confArr[md5($this->elid)]=$data;
@@ -120,6 +145,9 @@ class RfmBaseWidget extends \yii\base\Widget
 	{
 		$iframeurl=$this->urlParams;
 		array_unshift($iframeurl, '/'.$this->inst->id.'/file-man/dialog');
+		// если надо сделать относительные ссылки ..
+		if ($this->relativeUrl)
+			$iframeurl['relative_url']=1;
 		return $iframeurl;
 	}
 

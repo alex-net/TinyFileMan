@@ -37,6 +37,12 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 	];
 
 	/**
+	 * Класс модального окна . ... можно пользовать разный bootstrap  
+	 * @var string
+	 */
+	public $bootstrapModelClass='yii\bootstrap\Modal';
+
+	/**
 	 * настройки файлового менеджера  .. (позволяют перебить данные из config файла файлового менеджера )
 	 * @var array
 	 */
@@ -66,6 +72,7 @@ class FileManMod extends \yii\base\Module implements \yii\base\BootstrapInterfac
 				//'selector'=>'textarea',
 				'language'=>reset($lang),
 				'plugins'=>'image imagetools media code',
+				// https://www.tiny.cloud/docs/advanced/available-toolbar-buttons/
 				'toolbar'=>'undo redo | styleselect | bold italic | link image | code',
 				'menubar'=>'file edit insert view format table tools help',
 			];

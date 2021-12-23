@@ -25,7 +25,7 @@ class RfmInputWidget extends RfmBaseWidget
 	 * Настройки обёртки 
 	 * @var array
 	 */
-	public $wrapperOptions=['class'=>'input-group'];
+	public $wrapperOptions=['class'=>'input-group form-group'];
 	/**
 	 * Текст на кнопке
 	 * @var string
@@ -38,7 +38,7 @@ class RfmInputWidget extends RfmBaseWidget
 	 */
 	public $btnOptions=['class'=>'btn btn-default'];
 
-	public $modalHead='выбор файла';
+	public $modalHead='Выбор файла';
 	/**
 	 * Настройки модального окна
 	 * @var array
@@ -66,14 +66,12 @@ class RfmInputWidget extends RfmBaseWidget
 
 		// проброс настроек кнопки 
 		$btnOptions=$this->btnOptions;
-		if (!empty($this->btnText))
-			$btnOptions['label']=$this->btnText;
 		// проброс настроек модельного окна .. 
 		$modalOption=$this->modalOption;
-		if (empty($modalOption['toggleButton']))
-			$modalOption['toggleButton']=$btnOptions;
+		$modalOption['toggleButton']=false;
 		if (!empty($this->modalHead))
 			$modalOption['header']=$this->modalHead;
+
 
 
 		$iframeurl=$this->createUrlToManager();
@@ -90,7 +88,16 @@ class RfmInputWidget extends RfmBaseWidget
 		$iframeurl = \yii\helpers\Url::to($iframeurl);
 		//Yii::info($iframeurl,'$iframeurl');
 		
-		$this->saveConfigToSessi();
+		//$this->saveConfigToSessi();
+
+		\AlexNet\TinyFileMan\assets\RfmInputWidgetAsset::register($this->view);
+		// дописываем обёртку для элемента чтобы  можно было прицепиться  jsом
+		$wrappClass='rfm-input-widget';
+		if(empty($this->wrapperOptions['class']))
+			$this->wrapperOptions['class']=$wrappClass;
+		else
+			$this->wrapperOptions['class'].=' '.$wrappClass;
+		$this->wrapperOptions['data-fm-url']=$iframeurl;
 		
 
 		return $this->render('field-widget',[
@@ -100,10 +107,11 @@ class RfmInputWidget extends RfmBaseWidget
 			'inputOptions'=>$this->inputOptions,
 			'wrapperOptions'=>$this->wrapperOptions,
 			'wid'=>$this->id,
+			'btnText'=>$this->btnText,
 			'btnOptions'=>$btnOptions,
 			'inputid'=>$inputid,
 			'modalOption'=>$modalOption,
-			'iframeUrl'=>$iframeurl,
+			'BModalClass'=>$this->bootstrapModelClass,
 		]);
 	}
 }

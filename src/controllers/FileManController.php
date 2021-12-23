@@ -77,7 +77,7 @@ class FileManController extends \yii\web\Controller
 			throw new \yii\web\NotFoundHttpException("Error Processing Request");
 
 		Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
-		return ['conf'=>$conf['editor']];
+		return ['conf'=>$conf['editor']??[]];
 		//return [];
 	}
 }
