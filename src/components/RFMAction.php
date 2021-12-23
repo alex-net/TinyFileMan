@@ -28,6 +28,13 @@ class RFMAction extends \yii\base\Action
 			$path=Yii::getAlias($conf[$key]);
 			if (!file_exists($path))
 				\yii\helpers\FileHelper::createDirectory($path);
+			$webroot=realpath(Yii::getAlias('@webroot'));
+			if ($key=='thumbsPath' && strpos($path, $webroot)===false){
+				$thumbsAsset=new \yii\web\AssetBundle([
+					'sourcePath'=>$path,
+				]);
+				$thumbsAsset->publish(Yii::$app->assetManager);
+			}
 		}
 	
 		// если файла нет - пишем ошибку .. 

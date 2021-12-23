@@ -52,7 +52,7 @@ index bac3713..f7a49e9 100755
  mb_regex_encoding('UTF-8');
  ob_start('mb_output_handler');
 diff --git a/dialog.php b/dialog.php
-index 3ebde34..2ea2832 100644
+index 3ebde34..493d31d 100644
 --- a/dialog.php
 +++ b/dialog.php
 @@ -1,8 +1,6 @@
@@ -64,18 +64,7 @@ index 3ebde34..2ea2832 100644
  if (USE_ACCESS_KEYS == true){
  	if (!isset($_GET['akey'], $config['access_keys']) || empty($config['access_keys'])){
  		die('Access Denied!');
-@@ -94,6 +92,10 @@ if (!empty($_SESSION['RF']["subfolder"])
- ) {
-     $rfm_subfolder = $_SESSION['RF']['subfolder'];
- }
-+Yii::info($rfm_subfolder,'$rfm_subfolder');
-+if (!$rfm_subfolder && 0)
-+    $rfm_subfolder='media';
-+
- 
- if ($rfm_subfolder != "" && $rfm_subfolder[strlen($rfm_subfolder) - 1] != "/") {
-     $rfm_subfolder .= "/";
-@@ -597,9 +599,15 @@ $src = '';
+@@ -597,9 +595,15 @@ $src = '';
  if ($ftp) {
      try {
          $files = $ftp->scanDir($config['ftp_base_folder'] . $config['upload_dir'] . $rfm_subfolder . $subdir);
@@ -93,7 +82,7 @@ index 3ebde34..2ea2832 100644
      } catch (FtpClient\FtpException $e) {
          echo "Error: ";
          echo $e->getMessage();
-@@ -1073,6 +1081,15 @@ $files = $sorted;
+@@ -1073,6 +1077,15 @@ $files = $sorted;
  
                      $img_width = $img_height = "";
                      if($ftp){
@@ -109,13 +98,13 @@ index 3ebde34..2ea2832 100644
                          $mini_src = $src_thumb = $config['ftp_base_url'].$config['ftp_thumbs_dir'].$subdir. $file;
                          $creation_thumb_path = "/".$config['ftp_base_folder'].$config['ftp_thumbs_dir'].$subdir. $file;
                      }else{
-@@ -1097,6 +1114,12 @@ $files = $sorted;
+@@ -1097,6 +1110,12 @@ $files = $sorted;
                          }
                      }
                  }
 +                // зачищаем пути от document root ... чтобы  все они были относительно корня ..
 +                foreach(['src_thumb','src','mini_src']as $var){
-+                    $$var=str_replace($_SERVER['DOCUMENT_ROOT'], '', $$var);
++                    $$var=str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', $$var);
 +                    if ($thumbsAsset && strpos($$var, $thumbsAsset->sourcePath)===0)
 +                        $$var=str_replace($thumbsAsset->sourcePath,$thumbsAsset->baseUrl , $$var);
 +                }
