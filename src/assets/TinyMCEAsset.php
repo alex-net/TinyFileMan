@@ -6,11 +6,11 @@ use Yii;
 
 class TinyMCEAsset extends \yii\web\AssetBundle
 {
-	public $sourcePath='@npm/tinymce';
+	public $sourcePath = '@npm/tinymce';
 
-	public $js=['tinymce.min.js','jquery.tinymce.js'];
+	public $js = ['tinymce.min.js', 'jquery.tinymce.js'];
 	
-	public $depends=[
+	public $depends = [
 		'\yii\web\YiiAsset',
 	];
 

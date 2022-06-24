@@ -2,9 +2,9 @@
 <?php 
 
 echo \yii\widgets\DetailView::widget([
-	'model'=>$errData,
-	'attributes'=>[
-		'file','code','mess','trace:html'
+	'model' => $errData,
+	'attributes' => [
+		'file', 'code', 'mess', 'trace:html'
 	],
 ]);
 
